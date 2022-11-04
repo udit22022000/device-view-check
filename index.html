@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button id="btn1">Get UserAgent</button>
+    <button id="btn2">Check IOS device</button>
+    <button id="btn3">Check IOS Webview</button>
+    <button id="btn4">Check IOS Mobile Web</button>
+    <div id="udit"></div>
+  </body>
+  <script>
+    function userAgent() {
+      return window.navigator.userAgent;
+    }
+
+    const isIosDevice = () => {
+      const uAgent = window.navigator && window.navigator.userAgent;
+      const isIosDeviceFound = /iPad|iPhone|iPod/i.test(uAgent);
+      return isIosDeviceFound;
+    };
+
+    const isWebViewDetected = () => {
+      const userAgent = window.navigator && window.navigator.userAgent;
+      const isSafariWebView =
+        /(iPhone|iPod|iPad).*AppleWebKit(?!.*Safari)/i.test(
+          window.navigator.userAgent
+        );
+      if (
+        isSafariWebView ||
+        /wv/i.test(userAgent) ||
+        (!/UCBrowser/g.test(userAgent) &&
+          /version\/[0-9].[0-9]/i.test(userAgent) &&
+          /Chrome\/\d*.\d*.\d*.\d*/i.test(userAgent))
+      ) {
+        return true;
+      }
+      return false;
+    };
+
+    const isIosMWeb = () => {
+      const userAgent = window.navigator && window.navigator.userAgent;
+      const isIos = isIosDevice();
+      const isIosChrome = isIos && /CriOS/i.test(userAgent);
+      const isIosSafari = isIos && /Safari/i.test(userAgent);
+      if (
+        (isIosChrome || isIosSafari) &&
+        !/FxiOS/i.test(userAgent) &&
+        !isWebViewDetected()
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    };
+
+    const isIosWebView = () => {
+      return isIosDevice() && isWebViewDetected();
+    };
+
+    var displayElement = document.getElementById("udit");
+    document.getElementById("btn1").addEventListener("click", () => {
+      displayElement.innerHTML = userAgent();
+    });
+
+    document.getElementById("btn2").addEventListener("click", () => {
+      console.log("udit");
+
+      if (isIosDevice()) {
+        displayElement.innerHTML = "YES";
+        console.log("sadj");
+      } else {
+        displayElement.innerHTML = "NO";
+      }
+    });
+
+    document.getElementById("btn3").addEventListener("click", () => {
+      if (isIosWebView()) {
+        displayElement.innerHTML = "YES";
+      } else {
+        displayElement.innerHTML = "NO";
+      }
+    });
+
+    document.getElementById("btn4").addEventListener("click", () => {
+      if (isIosMWeb()) {
+        displayElement.innerHTML = "YES";
+      } else {
+        displayElement.innerHTML = "NO";
+      }
+    });
+  </script>
+</html>
