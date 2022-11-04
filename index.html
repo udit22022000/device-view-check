@@ -5,12 +5,23 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <style>
+      button {
+        margin: 20px;
+      }
+
+      div {
+        margin: auto;
+      }
+    </style>
   </head>
   <body>
     <button id="btn1">Get UserAgent</button>
     <button id="btn2">Check Iphone/Ipad</button>
     <button id="btn3">Check IOS Webview</button>
     <button id="btn4">Check IOS Mobile Web</button>
+    <button id="btn5">Check Android Webview</button>
+    <button id="btn6">Check Android Mobile Web</button>
     <div id="udit"></div>
   </body>
   <script>
@@ -62,13 +73,43 @@
       return isIosDevice() && isWebViewDetected();
     };
 
+    const isAndroidMweb = () => {
+      const userAgent = window.navigator.userAgent || "";
+      const isAndroid = /android/i.test(userAgent);
+      const isAndroidWebViewKitKat =
+        /android/i.test(userAgent) &&
+        /version\/[0-9].[0-9]/i.test(userAgent) &&
+        /Chrome\/\d*.\d*.\d*.\d*/i.test(userAgent);
+      const isAndroidWebViewLollipop =
+        /android/i.test(userAgent) && /wv/i.test(userAgent);
+      const isUcBrowser = /ucbrowser|ucweb/i.test(userAgent);
+      const isAppleWebkit = /AppleWebKit/i.test(userAgent);
+      if (
+        isAndroid &&
+        isAppleWebkit &&
+        !isAndroidWebViewKitKat &&
+        !isAndroidWebViewLollipop &&
+        !isUcBrowser
+      ) {
+        return true;
+      }
+      return false;
+    };
+
+    const isAndroidWebView = () => {
+      const userAgent = window.navigator.userAgent || "";
+      const isWebView = isWebViewDetected();
+      const isAndroid = /android/i.test(userAgent);
+      if (isWebView && isAndroid) return true;
+      return false;
+    };
+
     var displayElement = document.getElementById("udit");
     document.getElementById("btn1").addEventListener("click", () => {
       displayElement.innerHTML = userAgent();
     });
 
     document.getElementById("btn2").addEventListener("click", () => {
-
       if (isIosDevice()) {
         displayElement.innerHTML = "YES";
       } else {
@@ -86,6 +127,22 @@
 
     document.getElementById("btn4").addEventListener("click", () => {
       if (isIosMWeb()) {
+        displayElement.innerHTML = "YES";
+      } else {
+        displayElement.innerHTML = "NO";
+      }
+    });
+
+    document.getElementById("btn5").addEventListener("click", () => {
+      if (isAndroidWebView()) {
+        displayElement.innerHTML = "YES";
+      } else {
+        displayElement.innerHTML = "NO";
+      }
+    });
+
+    document.getElementById("btn6").addEventListener("click", () => {
+      if (isAndroidMweb()) {
         displayElement.innerHTML = "YES";
       } else {
         displayElement.innerHTML = "NO";
