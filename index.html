@@ -53,21 +53,16 @@
       return false;
     };
 
-    const isIosMWeb = () => {
-      const userAgent = window.navigator && window.navigator.userAgent;
-      const isIos = isIosDevice();
-      const isIosChrome = isIos && /CriOS/i.test(userAgent);
-      const isIosSafari = isIos && /Safari/i.test(userAgent);
-      if (
-        (isIosChrome || isIosSafari) &&
-        !/FxiOS/i.test(userAgent) &&
-        !isWebViewDetected()
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    };
+  const isiOSmWeb = () => {
+  const userAgent = window.navigator.userAgent || '';
+  const isIos = /iphone|ipod|ipad/i.test(userAgent);
+  const isIosChrome = isIos && /CriOS/i.test(userAgent);
+  const isIosSafari = isIos && /Safari/i.test(userAgent);
+  if ((isIosChrome || isIosSafari) && !/FxiOS/i.test(userAgent)) {
+    return true;
+  }
+  return false;
+};
 
     const isIosWebView = () => {
       return isIosDevice() && isWebViewDetected();
@@ -126,7 +121,7 @@
     });
 
     document.getElementById("btn4").addEventListener("click", () => {
-      if (isIosMWeb()) {
+      if (isiOSmWeb()) {
         displayElement.innerHTML = "YES";
       } else {
         displayElement.innerHTML = "NO";
