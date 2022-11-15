@@ -23,13 +23,18 @@
     <button id="btn5">Check Android Webview</button>
     <button id="btn6">Check Android Mobile Web</button>
     <input id="single-factor-code-text-field" autocomplete="one-time-code"/>
+    <button id="apple-btn">Click me</button>
     <div id="udit"></div>
   </body>
   <script>
     function userAgent() {
       return window.navigator.userAgent;
     }
-
+    
+    function appOtp() {
+        return document.getElementById("single-factor-code-text-field").value;  
+    }
+    
     const isIosDevice = () => {
       const uAgent = window.navigator && window.navigator.userAgent;
       const isIosDeviceFound = /iPad|iPhone|iPod/i.test(uAgent);
@@ -124,6 +129,11 @@
         displayElement.innerHTML = "NO";
       }
     });
+    
+    document.getElementById("apple-btn").addEventListener("click", () => {
+        displayElement.innerHTML = appOtp();
+    });
+    
 
     document.getElementById("btn4").addEventListener("click", () => {
       if (isiOSmWeb()) {
