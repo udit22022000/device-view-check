@@ -71,8 +71,16 @@
 };
 
     const isIosWebView = () => {
-      return isIosDevice() && isWebViewDetected();
+        
+      const iosPayload = {"hello": "udit"};
+      
+      return window.webkit &&
+        window.webkit.messageHandlers &&
+        window.webkit.messageHandlers.sendSignalToNative &&
+        window.webkit.messageHandlers.sendSignalToNative.postMessage &&
+        window.webkit.messageHandlers.sendSignalToNative.postMessage(iosPayload);
     };
+    
 
     const isAndroidMweb = () => {
       const userAgent = window.navigator.userAgent || "";
