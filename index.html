@@ -72,13 +72,18 @@
 
     const isIosWebView = () => {
         
-      const iosPayload = {"hello": "udit"};
-      
-      return window.webkit &&
-        window.webkit.messageHandlers &&
-        window.webkit.messageHandlers.sendSignalToNative &&
-        window.webkit.messageHandlers.sendSignalToNative.postMessage &&
-        window.webkit.messageHandlers.sendSignalToNative.postMessage(iosPayload);
+      const userAgent = window.navigator && window.navigator.userAgent;
+  /* Check for Safari Web View */
+  const isSafariWebView = /(iPhone|iPod|iPad).*AppleWebKit(?!.*Safari)/i.test(userAgent);
+  if (
+    isSafariWebView ||
+    /wv/i.test(userAgent) ||
+    (!/UCBrowser/g.test(userAgent) &&
+      (/version\/[0-9].[0-9]/i.test(userAgent) && /Chrome\/\d*.\d*.\d*.\d*/i.test(userAgent)))
+  ) {
+    return true;
+  }
+  return false;
     };
     
 
@@ -131,7 +136,7 @@
     });
 
     document.getElementById("btn3").addEventListener("click", () => {
-      if (isIosWebView()) {
+      if (isIosDevice() && isIosWebView()) {
         displayElement.innerHTML = "YES";
       } else {
         displayElement.innerHTML = "NO";
