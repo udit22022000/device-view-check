@@ -31,10 +31,6 @@
       return window.navigator.userAgent;
     }
 
-    function appOtp() {
-      return document.getElementById("single-factor-code-text-field").value;
-    }
-
     const isIosDevice = () => {
       const uAgent = window.navigator && window.navigator.userAgent;
       const isIosDeviceFound = /iPad|iPhone|iPod/i.test(uAgent);
