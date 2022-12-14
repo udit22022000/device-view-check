@@ -22,7 +22,7 @@
     <button id="btn4">Check IOS Mobile Web</button>
     <button id="btn5">Check Android Webview</button>
     <button id="btn6">Check Android Mobile Web</button>
-    <input id="single-factor-code-text-field" autocomplete="one-time-code"/>
+    <button id="btn7">Check Android GeckoView</button>
     <button id="apple-btn">Click me</button>
     <div id="udit"></div>
   </body>
@@ -30,11 +30,11 @@
     function userAgent() {
       return window.navigator.userAgent;
     }
-    
+
     function appOtp() {
-        return document.getElementById("single-factor-code-text-field").value;  
+      return document.getElementById("single-factor-code-text-field").value;
     }
-    
+
     const isIosDevice = () => {
       const uAgent = window.navigator && window.navigator.userAgent;
       const isIosDeviceFound = /iPad|iPhone|iPod/i.test(uAgent);
@@ -59,33 +59,16 @@
       return false;
     };
 
-  const isiOSmWeb = () => {
-  const userAgent = window.navigator.userAgent || '';
-  const isIos = /iphone|ipod|ipad/i.test(userAgent);
-  const isIosChrome = isIos && /CriOS/i.test(userAgent);
-  const isIosSafari = isIos && /Safari/i.test(userAgent);
-  if ((isIosChrome || isIosSafari) && !/FxiOS/i.test(userAgent)) {
-    return true;
-  }
-  return false;
-};
-
-    const isIosWebView = () => {
-        
-      const userAgent = window.navigator && window.navigator.userAgent;
-  /* Check for Safari Web View */
-  const isSafariWebView = /(iPhone|iPod|iPad).*AppleWebKit(?!.*Safari)/i.test(userAgent);
-  if (
-    isSafariWebView ||
-    /wv/i.test(userAgent) ||
-    (!/UCBrowser/g.test(userAgent) &&
-      (/version\/[0-9].[0-9]/i.test(userAgent) && /Chrome\/\d*.\d*.\d*.\d*/i.test(userAgent)))
-  ) {
-    return true;
-  }
-  return false;
+    const isiOSmWeb = () => {
+      const userAgent = window.navigator.userAgent || "";
+      const isIos = /iphone|ipod|ipad/i.test(userAgent);
+      const isIosChrome = isIos && /CriOS/i.test(userAgent);
+      const isIosSafari = isIos && /Safari/i.test(userAgent);
+      if ((isIosChrome || isIosSafari) && !/FxiOS/i.test(userAgent)) {
+        return true;
+      }
+      return false;
     };
-    
 
     const isAndroidMweb = () => {
       const userAgent = window.navigator.userAgent || "";
@@ -118,14 +101,26 @@
       return false;
     };
 
+    const isGeckoViewDetected = () => {
+      const userAgent = window.navigator.userAgent || "";
+      const isAndroid = /android/i.test(userAgent);
+      const isGecko = /gecko\/\d*./i.test(userAgent);
+      const rvVersion = /rv\:\d*./i.test(userAgent);
+      return (
+        isAndroid &&
+        !isWebViewDetected() &&
+        !isAndroidMweb() &&
+        isGecko &&
+        rvVersion &&
+        browserDetails
+      );
+    };
+
     var displayElement = document.getElementById("udit");
-   
-    
+
     document.getElementById("btn1").addEventListener("click", () => {
       displayElement.innerHTML = userAgent();
     });
-    
-    
 
     document.getElementById("btn2").addEventListener("click", () => {
       if (isIosDevice()) {
@@ -136,17 +131,12 @@
     });
 
     document.getElementById("btn3").addEventListener("click", () => {
-      if (isIosDevice() && isIosWebView()) {
+      if (isIosDevice() && isWebViewDetected()) {
         displayElement.innerHTML = "YES";
       } else {
         displayElement.innerHTML = "NO";
       }
     });
-    
-    document.getElementById("apple-btn").addEventListener("click", () => {
-        displayElement.innerHTML = appOtp();
-    });
-    
 
     document.getElementById("btn4").addEventListener("click", () => {
       if (isiOSmWeb()) {
@@ -166,6 +156,14 @@
 
     document.getElementById("btn6").addEventListener("click", () => {
       if (isAndroidMweb()) {
+        displayElement.innerHTML = "YES";
+      } else {
+        displayElement.innerHTML = "NO";
+      }
+    });
+
+    document.getElementById("btn7").addEventListener("click", () => {
+      if (isGeckoViewDetected()) {
         displayElement.innerHTML = "YES";
       } else {
         displayElement.innerHTML = "NO";
