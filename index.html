@@ -28,12 +28,12 @@
 		}
 
 		const callBridge = (bridgeName, payload, callBack) => {
-			if (window && window[CONSTANTS.WINDOW_BRIDGE]) {
-				window[CONSTANTS.WINDOW_BRIDGE].call(bridgeName, payload, callBack);
-			} else {
-				alert('JSBridge Not available');
-			}
-		};
+      if (window && window[CONSTANTS.WINDOW_BRIDGE]) {
+        window[CONSTANTS.WINDOW_BRIDGE].call(bridgeName, payload, callBack);
+      } else {
+        document.addEventListener("JSBridgeReady", init, false);
+      }
+    };
 
 		// paytmFetchAuthToken callback
 		function paytmFetchAuthTokenCallback(result) {
