@@ -40,7 +40,7 @@
 			const success = get(result, 'success', false);
 			const token = get(result, 'data', null);
 			if (success && token) {
-				alert("sso-token" + token);
+				alert("sso-token  --  " + token);
 			} else {
 				callBridge(
 					CONSTANTS.PAYTM_AUTH_HANDLER_BRIDGE,
@@ -55,7 +55,7 @@
 			const success = get(result, 'data.success', false);
 			const token = get(result, 'data.authToken', null);
 			if (success && token) {
-				alert("sso-token" + token);
+				alert("sso-token  ---  " + token);
 			} else {
 				alert(JSON.stringify(result));
 			}
