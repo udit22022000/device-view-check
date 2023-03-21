@@ -39,7 +39,7 @@
 		function paytmFetchAuthTokenCallback(result) {
 			const success = get(result, 'success', false);
 			const token = get(result, 'data', null);
-			if (success && !token) {
+			if (success && token) {
 				alert("sso-token-1  --  " + token);
 			} else {
 				callBridge(
