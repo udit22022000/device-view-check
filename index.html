@@ -270,12 +270,7 @@
           t = get(e, "data.authToken", null);
         n && t
           ? payloadCreation(t)
-          : window.UILogger &&
-            window.UILogger.log({
-              eventType: "SSO_TOKEN",
-              authHandlerResponse: e,
-              origin: "emiEdcJsBridge.html",
-            });
+          : alert("no sso")
       }
       function payloadCreation(e) {
         var n = new URLSearchParams(window.location.search),
