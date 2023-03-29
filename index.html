@@ -296,6 +296,7 @@
             params: t,
             origin: "emiEdcJsBridge.html",
           }),
+          alert(JSON.stringify(t)),
           formPost(t, apiHostPath + CONSTANTS.SHOW_SUMMARY_API);
       }
       function init() {
