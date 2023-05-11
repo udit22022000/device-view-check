@@ -109,7 +109,7 @@
     };
 
     const isAndroidWebViewBeta = () => {
-      return !!window.Android;
+      return !!window.Android || !!window.Build;
     };
 
     var displayElement = document.getElementById("udit");
