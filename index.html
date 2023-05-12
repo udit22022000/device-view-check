@@ -22,7 +22,6 @@
     <button id="btn5">Check Android Webview</button>
     <button id="btn6">Check Android Mobile Web</button>
     <button id="btn7">Check Android GeckoView</button>
-    <button id="btn8">Print apps</button>
     <div id="udit"></div>
   </body>
   <script>
@@ -108,12 +107,6 @@
       );
     };
 
-    const getApps = () => {
-      var apps = navigator.app.links.get("http");
-
-      return String(apps);
-    };
-
     var displayElement = document.getElementById("udit");
 
     document.getElementById("btn1").addEventListener("click", () => {
@@ -166,10 +159,6 @@
       } else {
         displayElement.innerHTML = "NO";
       }
-    });
-
-    document.getElementById("btn8").addEventListener("click", () => {
-      displayElement.innerHTML = getApps();
     });
   </script>
 </html>
