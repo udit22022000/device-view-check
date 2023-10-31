@@ -22,6 +22,7 @@
     <button id="btn5">Check Android Webview</button>
     <button id="btn6">Check Android Mobile Web</button>
     <button id="btn7">Check Android GeckoView</button>
+    <button id="btn8">invoke paytm app</button>
     <div id="udit"></div>
   </body>
   <script>
@@ -160,5 +161,9 @@
         displayElement.innerHTML = "NO";
       }
     });
+
+    document.getElementById("btn8").addEventListener("click",() =>{
+      document.location.href = "paytmmp://upi/pay?pa=paytm-501485255@paytm&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM3103124475903101981&tr=3103124475903101981&am=1&cu=INR"
+    })
   </script>
 </html>
