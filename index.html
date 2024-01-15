@@ -178,7 +178,7 @@
     });
 
     document.getElementById("btn10").addEventListener("click", () => {
-         const res = openUpiApp("paytmmp://upi/pay?pa=paytm-501485255@paytm&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM3103124475903101981&tr=3103124475903101981&am=1&cu=INR")
+         const res = window.checkoutUpiIntent.openUpiApp("paytmmp://upi/pay?pa=paytm-501485255@paytm&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM3103124475903101981&tr=3103124475903101981&am=1&cu=INR")
           alert(res);
     });
 
