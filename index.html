@@ -25,11 +25,7 @@
     <button id="btn7">Check Android GeckoView</button>
     <button id="btn8">invoke paytm app</button>
     <button id="btn9">invoke random app</button>
-    <button id="btn10">invoke native function-4</button>
-     <div id="btn-10-check"></div>
     <div id="udit"></div>
-    <div id="iframeContainer"></div>
-    <button id="addIframeBtn">paytm app - Iframe</button>
   </body>
   <script>
     function userAgent() {
@@ -169,47 +165,18 @@
     });
 
     document.getElementById("btn8").addEventListener("click", () => {
-      document.location.href =
-        "paytmmp://upi/pay?pa=paytm-501485255@paytm&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM3103124475903101981&tr=3103124475903101981&am=1&cu=INR";
+      const res = window.checkoutUpiIntent.openUpiApp(
+        "paytmmp://pay?pa=paytm-501485255@paytm&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM3103124475903101981&tr=3103124475903101981&am=1&cu=INR"
+      );
+      document.getElementById("udit").innerHTML = "Result-" + String(res);
     });
 
     document.getElementById("btn9").addEventListener("click", () => {
-      document.location.href =
-        "xudbcwed://upi/pay?pa=paytm-501485255@paytm&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM3103124475903101981&tr=3103124475903101981&am=1&cu=INR";
+      const res = window.checkoutUpiIntent.openUpiApp(
+        "xyz://pay?pa=paytm-501485255@paytm&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM3103124475903101981&tr=3103124475903101981&am=1&cu=INR"
+      );
+      document.getElementById("udit").innerHTML = "Result-" + String(res);
     });
-
-    document.getElementById("btn10").addEventListener("click", () => {
-        const res = window.checkoutUpiIntent.openUpiApp("xyz://upi/pay?pa=paytm-501485255@paytm&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM3103124475903101981&tr=3103124475903101981&am=1&cu=INR")
-        document.getElementById("btn-10-check").innerHTML = "abc"+String(res);
-    });
-
-    
-
-    document
-      .getElementById("addIframeBtn")
-      .addEventListener("click", function () {
-        let iframeContainer = document.getElementById("iframeContainer");
-        
-        let iframe = document.createElement("iframe");
-
-        iframe.src =
-          "paytmmp://upi/pay?pa=paytm-501485255@paytm&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM3103124475903101981&tr=3103124475903101981&am=1&cu=INR";
-
-        iframe.style.display = "none";
-
-        iframe.onload = function() {
-    // This function will be called when the iframe has successfully loaded
-        alert('Iframe loaded successfully');
-        };
-
-      iframe.onerror = function() {
-    // This function will be called if there is an error loading the iframe
-        alert('Error loading iframe');
-      };
-        
-        // Append the iframe to the div container
-        iframeContainer.appendChild(iframe);
-      });
   </script>
 </html>
 
