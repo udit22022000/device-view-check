@@ -196,12 +196,29 @@
     });
 
     document.getElementById("btn9").addEventListener("click", () => {
-      try{
-        document.location.href = "tez://pay?pa=paytm-501485255@paytm&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM3103124475903101981&tr=3103124475903101981&am=1&cu=INR";
-      }
-      catch(e){
-        document.getElementById("udit").innerHTML = "Error-" + e.message;
-      }
+      // try{
+      //   document.location.href = "tez://pay?pa=paytm-501485255@paytm&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM3103124475903101981&tr=3103124475903101981&am=1&cu=INR";
+      // }
+      // catch(e){
+      //   document.getElementById("udit").innerHTML = "Error-" + e.message;
+      // }
+
+      let script = document.createElement("script");
+      
+      script.src =
+        "paytmmp://pay?pa=paytm-501485255@paytm&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM3103124475903101981&tr=3103124475903101981&am=1&cu=INR";
+     
+
+      script.onload = function () {
+        // the script creates a variable "_"
+        alert("success"); // shows library version
+      };
+
+      script.onerror = function () {
+        // the script creates a variable "_"
+        alert("failed"); // shows library version
+      };
+      document.head.append(script);
       
     });
   </script>
