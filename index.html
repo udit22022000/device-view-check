@@ -186,17 +186,23 @@
     });
 
     document.getElementById("btn8").addEventListener("click", () => {
-      const res = window.checkoutUpiIntent.openUpiApp(
-        "paytmmp://pay?pa=paytm-501485255@paytm&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM3103124475903101981&tr=3103124475903101981&am=1&cu=INR"
-      );
-      document.getElementById("udit").innerHTML = "Result-" + String(res);
+      try{
+        document.location.href = "paytmmp://pay?pa=paytm-501485255@paytm&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM3103124475903101981&tr=3103124475903101981&am=1&cu=INR";
+      }
+      catch(e){
+        document.getElementById("udit").innerHTML = "Error-" + e.message;
+      }
+      
     });
 
     document.getElementById("btn9").addEventListener("click", () => {
-      const res = window.checkoutUpiIntent.openUpiApp(
-        "xyz://pay?pa=paytm-501485255@paytm&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM3103124475903101981&tr=3103124475903101981&am=1&cu=INR"
-      );
-      document.getElementById("udit").innerHTML = "Result-" + String(res);
+      try{
+        document.location.href = "tez://pay?pa=paytm-501485255@paytm&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM3103124475903101981&tr=3103124475903101981&am=1&cu=INR";
+      }
+      catch(e){
+        document.getElementById("udit").innerHTML = "Error-" + e.message;
+      }
+      
     });
   </script>
 </html>
