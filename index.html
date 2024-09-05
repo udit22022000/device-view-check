@@ -27,8 +27,20 @@
     <button id="btn9">invoke random app</button>
     <button id="btn10">Check Instagram / Facebook webview</button>
     <div id="udit"></div>
-    <a href="scheme://" target="_blank">open in app</a>
+    <a href="#" onclick="openApp()">Open in App</a>
   </body>
+  <script>
+  let newWindow;
+  function openApp() {
+    newWindow = window.open('scheme://', '_blank');
+  }
+
+  function closeApp() {
+    if (newWindow) {
+      newWindow.close();
+    }
+  }
+  </script>
   <script>
     function userAgent() {
       return window.navigator.userAgent;
