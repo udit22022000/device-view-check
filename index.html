@@ -33,9 +33,7 @@
   let newWindow;
   function openApp() {
     newWindow = window.open('scheme://', '_blank');
-     setTimeOut(() => {
     closeApp();
-  }, 2000)
   }
 
   function closeApp() {
