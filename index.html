@@ -7,6 +7,7 @@
   </head>
   <body>
     <button id="open-deeplink">Open Deep Link</button>
+    <button id="open-deeplink-direct">Open Deep Link (Direct)</button>
     <script>
       /**
        * Try to open a custom-scheme deep link on mobile using a hidden iframe,
@@ -109,6 +110,15 @@
             }
           });
         });
+
+        const directButton = document.getElementById("open-deeplink-direct");
+        if (directButton) {
+          directButton.addEventListener("click", () => {
+            const deeplink =
+              "bvdc://upi/pay?pa=paytm-501485255@ptybl&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM50829804870839072797XXXXXXXXXXX&tr=50829804870839072797&am=1&cu=INR&split=CCONFEE:0.04|PCONFEE:0.04";
+            window.location.href = deeplink;
+          });
+        }
       }
 
       main();
