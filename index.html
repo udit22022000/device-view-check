@@ -2,116 +2,256 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <style>
+      button {
+        margin: 20px;
+      }
+      div {
+        text-align: center;
+      }
+    </style>
   </head>
   <body>
-    <button id="open-deeplink">Open Deep Link</button>
-    <script>
-      /**
-       * Try to open a custom-scheme deep link on mobile using a hidden iframe,
-       * detect success heuristically, and optionally apply a fallback.
-       *
-       * Returns a Promise<{ opened: boolean, reason: 'visibility'|'pagehide'|'blur'|'timeout', platform: 'ios'|'android'|'other' }>
-       */
-      function tryOpenCustomDeepLink(
-        deepLink,
-        {
-          timeoutMs = 1800,
-          // Optional fallbacks (disabled by default for testing):
-          androidIntent = null, // e.g. 'intent://...;S.browser_fallback_url=https%3A%2F%2Fexample.com;end'
-          fallbackUrl = null, // e.g. 'https://example.com'
-          enableRedirectOnFail = false, // true to actually redirect to fallbacks on failure
-          useIframe = true, // true: launch via hidden iframe (best for mobile custom schemes)
-        } = {}
-      ) {
-        return new Promise((resolve) => {
-          const ua = navigator.userAgent || "";
-          const isAndroid = /Android/i.test(ua);
-          const isIOS = /iP(hone|od|ad)/i.test(ua);
-          const platform = isAndroid ? "android" : isIOS ? "ios" : "other";
-
-          let opened = false;
-          let reason = "timeout";
-          let timerId = null;
-
-          const cleanup = () => {
-            clearTimeout(timerId);
-            document.removeEventListener("visibilitychange", onVis);
-            window.removeEventListener("pagehide", onHide, true);
-            window.removeEventListener("blur", onBlur, true);
-          };
-
-          const markOpened = (r) => {
-            opened = true;
-            reason = r;
-            cleanup();
-            resolve({ opened: true, reason, platform });
-          };
-
-          const onVis = () => {
-            if (document.visibilityState === "hidden") markOpened("visibility");
-          };
-          const onHide = () => markOpened("pagehide");
-          const onBlur = () => markOpened("blur");
-
-          document.addEventListener("visibilitychange", onVis);
-          window.addEventListener("pagehide", onHide, true);
-          window.addEventListener("blur", onBlur, true);
-
-          timerId = setTimeout(() => {
-            if (!opened) {
-              cleanup();
-              // Optional redirect behavior on failure
-              if (enableRedirectOnFail) {
-                if (isAndroid && androidIntent) {
-                  window.location.href = androidIntent;
-                } else if (fallbackUrl) {
-                  window.location.href = fallbackUrl;
-                }
-              }
-              resolve({ opened: false, reason: "timeout", platform });
-            }
-          }, timeoutMs);
-
-          // Launch attempt
-          if (useIframe) {
-            const iframe = document.createElement("iframe");
-            iframe.style.display = "none";
-            iframe.src = deepLink;
-            document.body.appendChild(iframe);
-            setTimeout(() => {
-              try {
-                document.body.removeChild(iframe);
-              } catch (_) {}
-            }, timeoutMs + 500);
-          } else {
-            // Alternative: direct navigation (may show "unknown scheme" in some webviews)
-            window.location.href = deepLink;
-          }
-        });
-      }
-
-      function main() {
-        const button = document.getElementById("open-deeplink");
-        if (!button) return;
-        button.addEventListener("click", () => {
-          const deeplink =
-            "bvdc://upi/pay?pa=paytm-501485255@ptybl&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM50829804870839072797XXXXXXXXXXX&tr=50829804870839072797&am=1&cu=INR&split=CCONFEE:0.04|PCONFEE:0.04";
-          tryOpenCustomDeepLink(deeplink, {
-            timeoutMs: 2000,
-            enableRedirectOnFail: false,
-          }).then((result) => {
-            if (!result.opened) {
-              alert("Unable to open the app.");
-            } else {
-              console.log(result);
-            }
-          });
-        });
-      }
-
-      main();
-    </script>
+    <h1>Hiii</h1>
+    <button id="btn1">Get UserAgent</button>
+    <button id="btn2">Check Iphone/Ipad</button>
+    <button id="btn3">Check IOS Webview</button>
+    <button id="btn4">Check IOS Mobile Web</button>
+    <button id="btn5">Check Android Webview</button>
+    <button id="btn6">Check Android Mobile Web</button>
+    <button id="btn7">Check Android GeckoView</button>
+    <button id="btn8">invoke paytm app</button>
+    <button id="btn9">invoke random app</button>
+    <button id="btn10">Check Instagram / Facebook webview</button>
+    <div id="udit"></div>
+    <a href="#" onclick="openApp()">Open in Apppp</a>
+    <a href="#" onclick="openApp2()">Open in Apppp 3</a>
   </body>
+  <script>
+  let newWindow;
+  function openApp() {
+    newWindow = window.open('paytmmp://upi://pay?pa=paytm-dxrum123@ptybl&pn=PAYTM%20ECOMMERCE%20PRIVATE%20LIMITED&mc=5814&tid=PYTM40905802451703002117&tr=40905802451703002117&am=1&cu=INR', '_blank');
+    closeApp();
+  }
+
+  function closeApp() {
+    if (newWindow) {
+      newWindow.close();
+    }
+  }
+
+
+  </script>
+  <script>
+  let newWindow2;
+  function openApp2() {
+    newWindow2 = window2.open('sdupiiii://pay?pa=paytm-dxrum123@ptybl&pn=PAYTM%20ECOMMERCE%20PRIVATE%20LIMITED&mc=5814&tid=PYTM40905802451703002117&tr=40905802451703002117&am=1&cu=INR', '_blank');
+    // closeApp2();
+  }
+
+  function closeApp2() {
+    if (newWindow2) {
+      newWindow2.close();
+    }
+  }
+
+
+  </script>
+  <script>
+    function userAgent() {
+      return window.navigator.userAgent;
+    }
+    const isIosDevice = () => {
+      const uAgent = window.navigator && window.navigator.userAgent;
+      const isIosDeviceFound = /iPad|iPhone|iPod/i.test(uAgent);
+      return isIosDeviceFound;
+    };
+
+    const isWebViewDetected = () => {
+      const userAgent = window.navigator && window.navigator.userAgent;
+      const isSafariWebView =
+        /(iPhone|iPod|iPad).*AppleWebKit(?!.*Safari)/i.test(
+          window.navigator.userAgent
+        );
+      if (
+        isSafariWebView ||
+        /wv/i.test(userAgent) ||
+        (!/UCBrowser/g.test(userAgent) &&
+          /version\/[0-9].[0-9]/i.test(userAgent) &&
+          /Chrome\/\d*.\d*.\d*.\d*/i.test(userAgent))
+      ) {
+        return true;
+      }
+      return false;
+    };
+
+    const isiOSmWeb = () => {
+      const userAgent = window.navigator.userAgent || "";
+      const isIos = /iphone|ipod|ipad/i.test(userAgent);
+      const isIosChrome = isIos && /CriOS/i.test(userAgent);
+      const isIosSafari = isIos && /Safari/i.test(userAgent);
+      if ((isIosChrome || isIosSafari) && !/FxiOS/i.test(userAgent)) {
+        return true;
+      }
+      return false;
+    };
+    const isAndroidMweb = () => {
+      const userAgent = window.navigator.userAgent || "";
+      const isAndroid = /android/i.test(userAgent);
+      const isAndroidWebViewKitKat =
+        /android/i.test(userAgent) &&
+        /version\/[0-9].[0-9]/i.test(userAgent) &&
+        /Chrome\/\d*.\d*.\d*.\d*/i.test(userAgent);
+      const isAndroidWebViewLollipop =
+        /android/i.test(userAgent) && /wv/i.test(userAgent);
+      const isUcBrowser = /ucbrowser|ucweb/i.test(userAgent);
+      const isAppleWebkit = /AppleWebKit/i.test(userAgent);
+      if (
+        isAndroid &&
+        isAppleWebkit &&
+        !isAndroidWebViewKitKat &&
+        !isAndroidWebViewLollipop &&
+        !isUcBrowser
+      ) {
+        return true;
+      }
+      return false;
+    };
+
+    const isAndroidWebView = () => {
+      const userAgent = window.navigator.userAgent || "";
+      const isWebView = isWebViewDetected();
+      const isAndroid = /android/i.test(userAgent);
+      if (isWebView && isAndroid) return true;
+      return false;
+    };
+
+    const isGeckoViewDetected = () => {
+      const userAgent = window.navigator.userAgent || "";
+      const isAndroid = /android/i.test(userAgent);
+      const isGecko = /gecko\/\d*./i.test(userAgent);
+      const rvVersion = /rv\:\d*./i.test(userAgent);
+      return (
+        isAndroid &&
+        !isWebViewDetected() &&
+        !isAndroidMweb() &&
+        isGecko &&
+        rvVersion
+      );
+    };
+
+    const isSocialMediaView = () => {
+      const userAgent = window.navigator.userAgent || "";
+      const isSocMediaView =
+        /instagram/i.test(userAgent) ||
+        /(FBAN\/FBIOS)/i.test(userAgent) ||
+        /(FB_IAB\/FB4A)/i.test(userAgent);
+      if (isSocMediaView) {
+        return true;
+      }
+      return false;
+    };
+
+    var displayElement = document.getElementById("udit");
+
+    document.getElementById("btn1").addEventListener("click", () => {
+      displayElement.innerHTML = userAgent();
+    });
+
+    document.getElementById("btn2").addEventListener("click", () => {
+      if (isIosDevice()) {
+        displayElement.innerHTML = "YES";
+      } else {
+        displayElement.innerHTML = "NO";
+      }
+    });
+
+    document.getElementById("btn3").addEventListener("click", () => {
+      if (isIosDevice() && isWebViewDetected()) {
+        displayElement.innerHTML = "YES";
+      } else {
+        displayElement.innerHTML = "NO";
+      }
+    });
+
+    document.getElementById("btn4").addEventListener("click", () => {
+      if (isiOSmWeb()) {
+        displayElement.innerHTML = "YES";
+      } else {
+        displayElement.innerHTML = "NO";
+      }
+    });
+
+    document.getElementById("btn5").addEventListener("click", () => {
+      if (isAndroidWebView()) {
+        displayElement.innerHTML = "YES";
+      } else {
+        displayElement.innerHTML = "NO";
+      }
+    });
+
+    document.getElementById("btn6").addEventListener("click", () => {
+      if (isAndroidMweb()) {
+        displayElement.innerHTML = "YES";
+      } else {
+        displayElement.innerHTML = "NO";
+      }
+    });
+
+    document.getElementById("btn7").addEventListener("click", () => {
+      if (isGeckoViewDetected()) {
+        displayElement.innerHTML = "YES";
+      } else {
+        displayElement.innerHTML = "NO";
+      }
+    });
+
+    document.getElementById("btn10").addEventListener("click", () => {
+      if (isSocialMediaView()) {
+        displayElement.innerHTML = "YES";
+      } else {
+        displayElement.innerHTML = "NO";
+      }
+    });
+
+    document.getElementById("btn8").addEventListener("click", () => {
+      try{
+        document.location.href = "paytmmp://pay?pa=paytm-501485255@paytm&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM3103124475903101981&tr=3103124475903101981&am=1&cu=INR";
+      }
+      catch(e){
+        document.getElementById("udit").innerHTML = "Error-" + e.message;
+      }
+      
+    });
+
+    document.getElementById("btn9").addEventListener("click", () => {
+      // try{
+      //   document.location.href = "tez://pay?pa=paytm-501485255@paytm&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM3103124475903101981&tr=3103124475903101981&am=1&cu=INR";
+      // }
+      // catch(e){
+      //   document.getElementById("udit").innerHTML = "Error-" + e.message;
+      // }
+
+      let script = document.createElement("script");
+      
+      script.src =
+        "paytmmp://pay?pa=paytm-501485255@paytm&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM3103124475903101981&tr=3103124475903101981&am=1&cu=INR";
+     
+
+      script.onload = function () {
+        // the script creates a variable "_"
+        alert("success"); // shows library version
+      };
+
+      script.onerror = function () {
+        // the script creates a variable "_"
+        alert("failed"); // shows library version
+      };
+      document.head.append(script);
+      
+    });
+  </script>
 </html>
