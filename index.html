@@ -141,6 +141,8 @@
 
 				const messageType = eventData?.type;
 
+				console.log('paytm: messageType:', messageType);
+
 				if (messageType === 'RESULT') {
 					const commandType = eventData.result?.command_type ?? 'unknown';
 					const status = eventData.result?.status ?? 'unknown';
