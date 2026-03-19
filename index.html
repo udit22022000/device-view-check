@@ -130,7 +130,7 @@
 		}
 
 		window.addEventListener('message', (eventDetails) => {
-			console.log('paytm: postMessage received - origin:', event);
+			console.log('paytm: postMessage received - origin:', eventDetails);
 			const event = JSON.parse(eventDetails.data);
 
 			if (event.data.type === 'RESULT') {
