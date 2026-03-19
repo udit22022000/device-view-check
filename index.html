@@ -131,54 +131,56 @@
 
 		window.addEventListener('message', (eventDetails) => {
 			try {
-				console.log('paytm: postMessage received - origin:', eventDetails);
-				console.log('paytm: postMessage received - data:', eventDetails.data);
-				const eventData = JSON.parse(eventDetails.data);
-				console.log('paytm: postMessage received - event:', event);
+				console.log('paytm: postMessage received ', eventDetails);
 
-				if (eventData.type === 'RESULT') {
-					console.log('paytm: message type is RESULT');
-					const commandType = event.data.result ? event.data.result.command_type : 'unknown';
-					const status = event.data.result ? event.data.result.status : 'unknown';
+				const eventData = typeof eventDetails.data === 'string'
+					? JSON.parse(eventDetails.data)
+					: eventDetails.data;
+
+				console.log('paytm: postMessage received - eventData:', eventData);
+
+				const messageType = eventData?.type;
+
+				if (messageType === 'RESULT') {
+					const commandType = eventData.result?.command_type ?? 'unknown';
+					const status = eventData.result?.status ?? 'unknown';
 					console.log('paytm: RESULT - command_type:', commandType, 'status:', status);
 
-					if (event.data.result.command_type === 'INITIALIZATION') {
-						if (event.data.result.status === 'SUCCESS') {
-							initializaton_event_response = event.data;
-							console.log('paytm: INITIALIZATION_SUCCESS - stored initialization response');
-							console.log('paytm: INITIALIZATION_SUCCESS - response data:', JSON.stringify(event.data, null, 2));
+					if (commandType === 'INITIALIZATION') {
+						initializaton_event_response = eventData;
+
+						if (status === 'SUCCESS') {
+							console.log('paytm: INITIALIZATION_SUCCESS');
 						} else {
-							initializaton_event_response = event.data;
-							console.warn('paytm: INITIALIZATION_FAILED - status:', event.data.result.status);
-							console.log('paytm: INITIALIZATION_FAILED - response data:', JSON.stringify(event.data, null, 2));
-							console.log('paytm: INITIALIZATION_FAILED - calling initiateEventlistenerApi');
+							console.warn('paytm: INITIALIZATION_FAILED - status:', status);
 							initiateEventlistenerApi();
 						}
 					} else {
 						console.log('paytm: RESULT - unhandled command_type:', commandType);
 					}
-				} else if (eventData.type === 'EVENT') {
-					console.log('paytm: message type is EVENT');
 
-					if (eventData.event.type === 'DEVICE_DATA_CAPTURED') {
+				} else if (messageType === 'EVENT') {
+					const eventType = eventData.event?.type ?? 'unknown';
+					console.log('paytm: EVENT type:', eventType);
+
+					if (eventType === 'DEVICE_DATA_CAPTURED' || eventType === 'DEVICE_DATA_CAPTURE_FAILED') {
 						device_profiling_event_response = eventData;
-						console.log('paytm: DEVICE_DATA_CAPTURED - calling initiateEventlistenerApi');
-						initiateEventlistenerApi();
-					} else if (eventData.event.type === 'DEVICE_DATA_CAPTURE_FAILED') {
-						device_profiling_event_response = eventData;
-						console.log('paytm: DEVICE_DATA_CAPTURE_FAILED - calling initiateEventlistenerApi');
+						console.log('paytm:', eventType, '- calling initiateEventlistenerApi');
 						initiateEventlistenerApi();
 					} else {
-						console.log('paytm: EVENT - unhandled event type:');
+						console.log('paytm: EVENT - unhandled event type:', eventType);
 					}
+
 				} else {
-					console.log('paytm: postMessage - unhandled message type:');
+					console.log('paytm: postMessage - unhandled message type:', messageType);
 				}
 
 			} catch (error) {
-				console.error('paytm: postMessage received - error:', error);
+				console.error('paytm: postMessage handler error:', error.message, error.stack);
 			}
 		});
+
+
 		console.log('paytm: postMessage listener registered');
 
 		document.addEventListener('DOMContentLoaded', function () {
