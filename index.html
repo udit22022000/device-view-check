@@ -1,257 +1,156 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <style>
-      button {
-        margin: 20px;
-      }
-      div {
-        text-align: center;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Hiii</h1>
-    <button id="btn1">Get UserAgent</button>
-    <button id="btn2">Check Iphone/Ipad</button>
-    <button id="btn3">Check IOS Webview</button>
-    <button id="btn4">Check IOS Mobile Web</button>
-    <button id="btn5">Check Android Webview</button>
-    <button id="btn6">Check Android Mobile Web</button>
-    <button id="btn7">Check Android GeckoView</button>
-    <button id="btn8">invoke paytm app</button>
-    <button id="btn9">invoke random app</button>
-    <button id="btn10">Check Instagram / Facebook webview</button>
-    <div id="udit"></div>
-    <a href="#" onclick="openApp()">Open in Apppp</a>
-    <a href="#" onclick="openApp2()">Open in Apppp 3</a>
-  </body>
-  <script>
-  let newWindow;
-  function openApp() {
-    newWindow = window.open('paytmmp://upi://pay?pa=paytm-dxrum123@ptybl&pn=PAYTM%20ECOMMERCE%20PRIVATE%20LIMITED&mc=5814&tid=PYTM40905802451703002117&tr=40905802451703002117&am=1&cu=INR', '_blank');
-    closeApp();
-  }
+<html>
 
-  function closeApp() {
-    if (newWindow) {
-      newWindow.close();
-    }
-  }
+<head>
+	<title>Biometric Visa VPP - Test</title>
+</head>
 
+<body>
+	<iframe id="vpp-iframe" src="" style="visibility: hidden" height="0" width="0"></iframe>
+	<script>
+		window.APP_DATA = {
+			actionUrl: "https://sandbox.auth.visa.com/oauth2/authorization/request/hub",
+			callbackUrl: "/instaproxy/api/biometric/eventlistener",
+			callbackData: {},
+			postData: JSON.stringify({
+				type: "COMMAND",
+				ref: "550e8400-e29b-41d4-a716-446655440000",
+				ts: 1702857600000,
+				command: {
+					type: "INITIALIZATION",
+					data: {
+						response_mode: "com_visa_web_message",
+						redirect_uri: "https://www.bicycle.com",
+						session_context: {
+							apn: "vdp-web",
+							client_software: {
+								top_origin: "https://www.bicycle.com",
+								integrator_origin: "https://www.bicycle.com",
+								uebas: [
+									{
+										source: "VDI",
+										ref: ""
+									}
+								],
+								id: "vdpw",
+								version: "27.01",
+								oauth2_version: "1.0",
+								tenancy: {
+									product_code: "vdp"
+								}
+							}
+						},
+						response_type: "urn:ext:oauth:response-type:server_state"
+					}
+				}
+			})
+		};
+	</script>
+	<script>
+		let initializaton_event_response = null;
+		let device_profiling_event_response = null;
 
-  </script>
-  <script>
-  let newWindow2;
-  function openApp2() {
-    newWindow2 = window2.open('sdupiiii://pay?pa=paytm-dxrum123@ptybl&pn=PAYTM%20ECOMMERCE%20PRIVATE%20LIMITED&mc=5814&tid=PYTM40905802451703002117&tr=40905802451703002117&am=1&cu=INR', '_blank');
-    // closeApp2();
-  }
+		function get(obj, path, defaultValue) {
+			const result = String.prototype.split
+				.call(path, /[,[\].]+?/)
+				.filter(Boolean)
+				.reduce(
+					(res, key) => (res !== null && res !== undefined ? res[key] : res),
+					obj
+				);
+			return result === null || result === undefined || result === obj
+				? defaultValue
+				: result;
+		}
 
-  function closeApp2() {
-    if (newWindow2) {
-      newWindow2.close();
-    }
-  }
+		const _formPost = (data) => {
+			let form = document.createElement("form");
+			form.action = data.actionUrl;
+			form.method = data.method;
+			if (data.content) {
+				for (const key in data.content) {
+					if (data.content.hasOwnProperty(key)) {
+						let input = document.createElement('input');
+						input.name = key;
+						input.hidden = true;
+						input.value = data.content[key];
+						form.appendChild(input);
+					}
+				}
+				document.body.appendChild(form);
+				form.submit();
+			}
+		};
 
+		function initiateEventlistenerApi() {
+			const url = instaproxyApiHostPath + get(APP_DATA, 'callbackUrl', null);
 
-  </script>
-  <script>
-    function userAgent() {
-      return window.navigator.userAgent;
-    }
-    const isIosDevice = () => {
-      const uAgent = window.navigator && window.navigator.userAgent;
-      const isIosDeviceFound = /iPad|iPhone|iPod/i.test(uAgent);
-      return isIosDeviceFound;
-    };
+			const payload = {
+				callbackData: get(APP_DATA, 'callbackData', null),
+				initialization_result: initializaton_event_response,
+				device_event: device_profiling_event_response,
+			};
 
-    const isWebViewDetected = () => {
-      const userAgent = window.navigator && window.navigator.userAgent;
-      const isSafariWebView =
-        /(iPhone|iPod|iPad).*AppleWebKit(?!.*Safari)/i.test(
-          window.navigator.userAgent
-        );
-      if (
-        isSafariWebView ||
-        /wv/i.test(userAgent) ||
-        (!/UCBrowser/g.test(userAgent) &&
-          /version\/[0-9].[0-9]/i.test(userAgent) &&
-          /Chrome\/\d*.\d*.\d*.\d*/i.test(userAgent))
-      ) {
-        return true;
-      }
-      return false;
-    };
+			fetch(url, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(payload),
+			})
+				.then(function (response) {
+					return response.json();
+				})
+				.then(function (responseData) {
+					_formPost({
+						actionUrl: get(responseData, 'actionUrl', null),
+						content: get(responseData, 'content', null),
+						method: 'POST',
+					});
+					console.log('initiateEventlistenerApi response', responseData);
+				})
+				.catch(function (error) {
+					console.log('initiateEventlistenerApi error', error);
+				});
+		}
 
-    const isiOSmWeb = () => {
-      const userAgent = window.navigator.userAgent || "";
-      const isIos = /iphone|ipod|ipad/i.test(userAgent);
-      const isIosChrome = isIos && /CriOS/i.test(userAgent);
-      const isIosSafari = isIos && /Safari/i.test(userAgent);
-      if ((isIosChrome || isIosSafari) && !/FxiOS/i.test(userAgent)) {
-        return true;
-      }
-      return false;
-    };
-    const isAndroidMweb = () => {
-      const userAgent = window.navigator.userAgent || "";
-      const isAndroid = /android/i.test(userAgent);
-      const isAndroidWebViewKitKat =
-        /android/i.test(userAgent) &&
-        /version\/[0-9].[0-9]/i.test(userAgent) &&
-        /Chrome\/\d*.\d*.\d*.\d*/i.test(userAgent);
-      const isAndroidWebViewLollipop =
-        /android/i.test(userAgent) && /wv/i.test(userAgent);
-      const isUcBrowser = /ucbrowser|ucweb/i.test(userAgent);
-      const isAppleWebkit = /AppleWebKit/i.test(userAgent);
-      if (
-        isAndroid &&
-        isAppleWebkit &&
-        !isAndroidWebViewKitKat &&
-        !isAndroidWebViewLollipop &&
-        !isUcBrowser
-      ) {
-        return true;
-      }
-      return false;
-    };
+		window.addEventListener('message', (event) => {
 
-    const isAndroidWebView = () => {
-      const userAgent = window.navigator.userAgent || "";
-      const isWebView = isWebViewDetected();
-      const isAndroid = /android/i.test(userAgent);
-      if (isWebView && isAndroid) return true;
-      return false;
-    };
+			if (event.data.type === 'RESULT') {
+				if (event.data.result.command_type === 'INITIALIZATION') {
+					if (event.data.result.status === 'SUCCESS') {
+						initializaton_event_response = event.data;
+						console.log("INITIALIZATION_SUCCESS");
+					} else {
+						initializaton_event_response = event.data;
+						initiateEventlistenerApi();
+						console.log("INITIALIZATION_FAILED");
+					}
+				}
+			} else if (event.data.type === 'EVENT') {
+				if (event.data.event.type === 'DEVICE_DATA_CAPTURED') {
+					device_profiling_event_response = event.data;
+					initiateEventlistenerApi();
+					console.log("DEVICE_DATA_CAPTURED");
+				} else if (event.data.event.type === 'DEVICE_DATA_CAPTURE_FAILED') {
+					device_profiling_event_response = event.data;
+					initiateEventlistenerApi();
+					console.log("DEVICE_DATA_CAPTURE_FAILED");
+				}
+			}
+		});
 
-    const isGeckoViewDetected = () => {
-      const userAgent = window.navigator.userAgent || "";
-      const isAndroid = /android/i.test(userAgent);
-      const isGecko = /gecko\/\d*./i.test(userAgent);
-      const rvVersion = /rv\:\d*./i.test(userAgent);
-      return (
-        isAndroid &&
-        !isWebViewDetected() &&
-        !isAndroidMweb() &&
-        isGecko &&
-        rvVersion
-      );
-    };
+		document.addEventListener('DOMContentLoaded', function () {
+			const fragment = encodeURIComponent(get(APP_DATA, 'postData', null));
+			const iframeUrl = `${get(APP_DATA, 'actionUrl', null)}#msg=${fragment}`;
+			console.log('Loading iframe URL:', iframeUrl);
+			console.log('APP_DATA:', JSON.stringify(APP_DATA, null, 2));
+			document.getElementById('vpp-iframe').src = iframeUrl;
+		});
+	</script>
+	<script>
+		var instaproxyApiHostPath = 'https://pgp-qa12.paytm.in';
+	</script>
+</body>
 
-    const isSocialMediaView = () => {
-      const userAgent = window.navigator.userAgent || "";
-      const isSocMediaView =
-        /instagram/i.test(userAgent) ||
-        /(FBAN\/FBIOS)/i.test(userAgent) ||
-        /(FB_IAB\/FB4A)/i.test(userAgent);
-      if (isSocMediaView) {
-        return true;
-      }
-      return false;
-    };
-
-    var displayElement = document.getElementById("udit");
-
-    document.getElementById("btn1").addEventListener("click", () => {
-      displayElement.innerHTML = userAgent();
-    });
-
-    document.getElementById("btn2").addEventListener("click", () => {
-      if (isIosDevice()) {
-        displayElement.innerHTML = "YES";
-      } else {
-        displayElement.innerHTML = "NO";
-      }
-    });
-
-    document.getElementById("btn3").addEventListener("click", () => {
-      if (isIosDevice() && isWebViewDetected()) {
-        displayElement.innerHTML = "YES";
-      } else {
-        displayElement.innerHTML = "NO";
-      }
-    });
-
-    document.getElementById("btn4").addEventListener("click", () => {
-      if (isiOSmWeb()) {
-        displayElement.innerHTML = "YES";
-      } else {
-        displayElement.innerHTML = "NO";
-      }
-    });
-
-    document.getElementById("btn5").addEventListener("click", () => {
-      if (isAndroidWebView()) {
-        displayElement.innerHTML = "YES";
-      } else {
-        displayElement.innerHTML = "NO";
-      }
-    });
-
-    document.getElementById("btn6").addEventListener("click", () => {
-      if (isAndroidMweb()) {
-        displayElement.innerHTML = "YES";
-      } else {
-        displayElement.innerHTML = "NO";
-      }
-    });
-
-    document.getElementById("btn7").addEventListener("click", () => {
-      if (isGeckoViewDetected()) {
-        displayElement.innerHTML = "YES";
-      } else {
-        displayElement.innerHTML = "NO";
-      }
-    });
-
-    document.getElementById("btn10").addEventListener("click", () => {
-      if (isSocialMediaView()) {
-        displayElement.innerHTML = "YES";
-      } else {
-        displayElement.innerHTML = "NO";
-      }
-    });
-
-    document.getElementById("btn8").addEventListener("click", () => {
-      try{
-        document.location.href = "paytmmp://pay?pa=paytm-501485255@paytm&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM3103124475903101981&tr=3103124475903101981&am=1&cu=INR";
-      }
-      catch(e){
-        document.getElementById("udit").innerHTML = "Error-" + e.message;
-      }
-      
-    });
-
-    document.getElementById("btn9").addEventListener("click", () => {
-      // try{
-      //   document.location.href = "tez://pay?pa=paytm-501485255@paytm&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM3103124475903101981&tr=3103124475903101981&am=1&cu=INR";
-      // }
-      // catch(e){
-      //   document.getElementById("udit").innerHTML = "Error-" + e.message;
-      // }
-
-      let script = document.createElement("script");
-      
-      script.src =
-        "paytmmp://pay?pa=paytm-501485255@paytm&pn=TEST%20MID%20LALIT&mc=5411&tid=PYTM3103124475903101981&tr=3103124475903101981&am=1&cu=INR";
-     
-
-      script.onload = function () {
-        // the script creates a variable "_"
-        alert("success"); // shows library version
-      };
-
-      script.onerror = function () {
-        // the script creates a variable "_"
-        alert("failed"); // shows library version
-      };
-      document.head.append(script);
-      
-    });
-  </script>
 </html>
