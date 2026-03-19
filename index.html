@@ -8,6 +8,7 @@
 <body>
 	<iframe id="vpp-iframe" src="" style="visibility: hidden" height="0" width="0"></iframe>
 	<script>
+		console.log('paytm: Initializing APP_DATA configuration');
 		window.APP_DATA = {
 			actionUrl: "https://sandbox.auth.visa.com/oauth2/authorization/request/hub",
 			callbackUrl: "/instaproxy/api/biometric/eventlistener",
@@ -45,6 +46,7 @@
 				}
 			})
 		};
+		console.log('paytm: APP_DATA initialized successfully', JSON.stringify(APP_DATA, null, 2));
 	</script>
 	<script>
 		let initializaton_event_response = null;
@@ -64,10 +66,13 @@
 		}
 
 		const _formPost = (data) => {
+			console.log('paytm: _formPost called with data:', JSON.stringify(data, null, 2));
 			let form = document.createElement("form");
 			form.action = data.actionUrl;
 			form.method = data.method;
+			console.log('paytm: _formPost - actionUrl:', data.actionUrl, 'method:', data.method);
 			if (data.content) {
+				console.log('paytm: _formPost - building form with content keys:', Object.keys(data.content));
 				for (const key in data.content) {
 					if (data.content.hasOwnProperty(key)) {
 						let input = document.createElement('input');
@@ -75,21 +80,27 @@
 						input.hidden = true;
 						input.value = data.content[key];
 						form.appendChild(input);
+						console.log('paytm: _formPost - added form field:', key, '=', data.content[key]);
 					}
 				}
 				document.body.appendChild(form);
+				console.log('paytm: _formPost - submitting form to:', data.actionUrl);
 				form.submit();
+			} else {
+				console.warn('paytm: _formPost - no content provided, form not submitted');
 			}
 		};
 
 		function initiateEventlistenerApi() {
 			const url = instaproxyApiHostPath + get(APP_DATA, 'callbackUrl', null);
+			console.log('paytm: initiateEventlistenerApi - calling URL:', url);
 
 			const payload = {
 				callbackData: get(APP_DATA, 'callbackData', null),
 				initialization_result: initializaton_event_response,
 				device_event: device_profiling_event_response,
 			};
+			console.log('paytm: initiateEventlistenerApi - payload:', JSON.stringify(payload, null, 2));
 
 			fetch(url, {
 				method: 'POST',
@@ -99,57 +110,105 @@
 				body: JSON.stringify(payload),
 			})
 				.then(function (response) {
+					console.log('paytm: initiateEventlistenerApi - response status:', response.status, response.statusText);
 					return response.json();
 				})
 				.then(function (responseData) {
-					_formPost({
+					console.log('paytm: initiateEventlistenerApi - response data:', JSON.stringify(responseData, null, 2));
+					const formPostData = {
 						actionUrl: get(responseData, 'actionUrl', null),
 						content: get(responseData, 'content', null),
 						method: 'POST',
-					});
-					console.log('initiateEventlistenerApi response', responseData);
+					};
+					console.log('paytm: initiateEventlistenerApi - calling _formPost with:', JSON.stringify(formPostData, null, 2));
+					_formPost(formPostData);
 				})
 				.catch(function (error) {
-					console.log('initiateEventlistenerApi error', error);
+					console.error('paytm: initiateEventlistenerApi - error:', error.message || error);
+					console.error('paytm: initiateEventlistenerApi - error stack:', error.stack);
 				});
 		}
 
 		window.addEventListener('message', (event) => {
+			console.log('paytm: postMessage received - origin:', event.origin);
+			console.log('paytm: postMessage received - data:', JSON.stringify(event.data, null, 2));
 
 			if (event.data.type === 'RESULT') {
+				console.log('paytm: message type is RESULT');
+				const commandType = event.data.result ? event.data.result.command_type : 'unknown';
+				const status = event.data.result ? event.data.result.status : 'unknown';
+				console.log('paytm: RESULT - command_type:', commandType, 'status:', status);
+
 				if (event.data.result.command_type === 'INITIALIZATION') {
 					if (event.data.result.status === 'SUCCESS') {
 						initializaton_event_response = event.data;
-						console.log("INITIALIZATION_SUCCESS");
+						console.log('paytm: INITIALIZATION_SUCCESS - stored initialization response');
+						console.log('paytm: INITIALIZATION_SUCCESS - response data:', JSON.stringify(event.data, null, 2));
 					} else {
 						initializaton_event_response = event.data;
+						console.warn('paytm: INITIALIZATION_FAILED - status:', event.data.result.status);
+						console.log('paytm: INITIALIZATION_FAILED - response data:', JSON.stringify(event.data, null, 2));
+						console.log('paytm: INITIALIZATION_FAILED - calling initiateEventlistenerApi');
 						initiateEventlistenerApi();
-						console.log("INITIALIZATION_FAILED");
 					}
+				} else {
+					console.log('paytm: RESULT - unhandled command_type:', commandType);
 				}
 			} else if (event.data.type === 'EVENT') {
+				console.log('paytm: message type is EVENT');
+				const eventType = event.data.event ? event.data.event.type : 'unknown';
+				console.log('paytm: EVENT type:', eventType);
+
 				if (event.data.event.type === 'DEVICE_DATA_CAPTURED') {
 					device_profiling_event_response = event.data;
+					console.log('paytm: DEVICE_DATA_CAPTURED - stored device profiling response');
+					console.log('paytm: DEVICE_DATA_CAPTURED - response data:', JSON.stringify(event.data, null, 2));
+					console.log('paytm: DEVICE_DATA_CAPTURED - calling initiateEventlistenerApi');
 					initiateEventlistenerApi();
-					console.log("DEVICE_DATA_CAPTURED");
 				} else if (event.data.event.type === 'DEVICE_DATA_CAPTURE_FAILED') {
 					device_profiling_event_response = event.data;
+					console.warn('paytm: DEVICE_DATA_CAPTURE_FAILED - stored device profiling error response');
+					console.log('paytm: DEVICE_DATA_CAPTURE_FAILED - response data:', JSON.stringify(event.data, null, 2));
+					console.log('paytm: DEVICE_DATA_CAPTURE_FAILED - calling initiateEventlistenerApi');
 					initiateEventlistenerApi();
-					console.log("DEVICE_DATA_CAPTURE_FAILED");
+				} else {
+					console.log('paytm: EVENT - unhandled event type:', eventType);
 				}
+			} else {
+				console.log('paytm: postMessage - unhandled message type:', event.data.type);
 			}
 		});
+		console.log('paytm: postMessage listener registered');
 
 		document.addEventListener('DOMContentLoaded', function () {
-			const fragment = encodeURIComponent(get(APP_DATA, 'postData', null));
-			const iframeUrl = `${get(APP_DATA, 'actionUrl', null)}#msg=${fragment}`;
-			console.log('Loading iframe URL:', iframeUrl);
-			console.log('APP_DATA:', JSON.stringify(APP_DATA, null, 2));
-			document.getElementById('vpp-iframe').src = iframeUrl;
+			console.log('paytm: DOMContentLoaded fired');
+			const postData = get(APP_DATA, 'postData', null);
+			console.log('paytm: postData (raw):', postData);
+			const fragment = encodeURIComponent(postData);
+			console.log('paytm: fragment (encoded):', fragment.substring(0, 100) + '...');
+			const actionUrl = get(APP_DATA, 'actionUrl', null);
+			console.log('paytm: actionUrl:', actionUrl);
+			const iframeUrl = `${actionUrl}#msg=${fragment}`;
+			console.log('paytm: full iframe URL:', iframeUrl);
+			const iframe = document.getElementById('vpp-iframe');
+			if (iframe) {
+				iframe.src = iframeUrl;
+				console.log('paytm: iframe src set successfully');
+				iframe.addEventListener('load', function () {
+					console.log('paytm: iframe load event fired');
+				});
+				iframe.addEventListener('error', function (e) {
+					console.error('paytm: iframe error event fired:', e);
+				});
+			} else {
+				console.error('paytm: iframe element not found!');
+			}
 		});
+		console.log('paytm: DOMContentLoaded listener registered');
 	</script>
 	<script>
 		var instaproxyApiHostPath = 'https://pgp-qa12.paytm.in';
+		console.log('paytm: instaproxyApiHostPath set to:', instaproxyApiHostPath);
 	</script>
 </body>
 
