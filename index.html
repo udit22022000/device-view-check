@@ -6,7 +6,7 @@
 </head>
 
 <body>
-	<iframe id="vpp-iframe" src="" style="visibility: hidden" height="100vh" width="100vw"></iframe>
+	<iframe id="vpp-iframe" src=""></iframe>
 	<script>
 		console.log('paytm: Initializing APP_DATA configuration');
 		window.APP_DATA = {
@@ -198,6 +198,8 @@
 			const iframe = document.getElementById('vpp-iframe');
 			if (iframe) {
 				iframe.src = iframeUrl;
+				iframe.style.height = "100vh";
+				iframe.style.with = "100vw";
 				console.log('paytm: iframe src set successfully');
 				iframe.addEventListener('load', function () {
 					console.log('paytm: iframe load event fired');
