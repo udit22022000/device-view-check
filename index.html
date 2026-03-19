@@ -129,8 +129,9 @@
 				});
 		}
 
-		window.addEventListener('message', (event) => {
+		window.addEventListener('message', (eventDetails) => {
 			console.log('paytm: postMessage received - origin:', event);
+			const event = JSON.parse(eventDetails.data);
 
 			if (event.data.type === 'RESULT') {
 				console.log('paytm: message type is RESULT');
