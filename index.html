@@ -17,7 +17,7 @@
 			actionUrl: "https://sandbox.auth.visa.com/oauth2/authorization/request/hub",
 			callbackUrl: "/instaproxy/api/biometric/eventlistener",
 			callbackData: {},
-			postData: JSON.stringify({
+			postData: {
 				type: "COMMAND",
 				ref: "550e8400-e29b-41d4-a716-446655440000",
 				ts: 1702857600000,
@@ -26,12 +26,11 @@
 					data: {
 						response_mode: "com_visa_web_message",
 						redirect_uri: "https://www.bicycle.com",
-						response_type: "urn:ext:oauth:response-type:server_state",
 						session_context: {
 							apn: "vdp-web",
 							client_software: {
-								top_origin: "https://www.bicycle.com",
-								integrator_origin: "https://www.bicycle.com",
+								top_origin: "https://udit22022000.github.io",
+								integrator_origin: "https://udit22022000.github.io",
 								uebas: [
 									{
 										source: "VDI",
@@ -46,9 +45,10 @@
 								}
 							}
 						},
+						response_type: "urn:ext:oauth:response-type:server_state"
 					}
 				}
-			})
+			}
 		};
 		console.log('paytm: APP_DATA initialized successfully', JSON.stringify(APP_DATA, null, 2));
 	</script>
