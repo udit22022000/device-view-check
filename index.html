@@ -22,6 +22,7 @@
 					data: {
 						response_mode: "com_visa_web_message",
 						redirect_uri: "https://www.bicycle.com",
+						response_type: "urn:ext:oauth:response-type:server_state",
 						session_context: {
 							apn: "vdp-web",
 							client_software: {
@@ -41,7 +42,6 @@
 								}
 							}
 						},
-						response_type: "urn:ext:oauth:response-type:server_state"
 					}
 				}
 			})
@@ -198,8 +198,6 @@
 			const iframe = document.getElementById('vpp-iframe');
 			if (iframe) {
 				iframe.src = iframeUrl;
-				iframe.style.height = "100vh";
-				iframe.style.width = "100vw";
 				console.log('paytm: iframe src set successfully');
 				iframe.addEventListener('load', function () {
 					console.log('paytm: iframe load event fired');
