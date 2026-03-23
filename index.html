@@ -6,42 +6,52 @@
 </head>
 
 <body>
-	<iframe id="vpp-iframe" src="" style="visibility: hidden" height="0" width="0"></iframe>
+	<iframe id="vpp-iframe" src="" style="visibility: hidden" height="0" width="0"
+		allow="payment *; publickey-credentials-get *; publickey-credentials-create *"
+		referrerpolicy="strict-origin-when-cross-origin"
+		sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation allow-top-navigation-by-user-activation allow-modals">
+	</iframe>
 	<script>
 		console.log('paytm: Initializing APP_DATA configuration');
+
+		// Generate dynamic IDs
+		const correlationId = crypto.randomUUID ? crypto.randomUUID() : 'paytm-' + Date.now();
+		const timestamp = Date.now();
+		const uebas_ref = crypto.randomUUID ? crypto.randomUUID() : 'uebas-' + Date.now();
+
 		window.APP_DATA = {
 			actionUrl: "https://sandbox.auth.visa.com/oauth2/authorization/request/hub",
 			callbackUrl: "/instaproxy/api/biometric/eventlistener",
 			callbackData: {},
 			postData: JSON.stringify({
 				type: "COMMAND",
-				ref: "550e8400-e29b-41d4-a716-446655440000",
-				ts: 1702857600000,
+				ref: correlationId,
+				ts: timestamp,
 				command: {
 					type: "INITIALIZATION",
 					data: {
 						response_mode: "com_visa_web_message",
-						redirect_uri: "https://www.bicycle.com",
+						redirect_uri: "https://localhost:5000",
 						response_type: "urn:ext:oauth:response-type:server_state",
 						session_context: {
 							apn: "vdp-web",
 							client_software: {
-								top_origin: "https://www.bicycle.com",
-								integrator_origin: "https://www.bicycle.com",
+								top_origin: "https://localhost:5000",
+								integrator_origin: "https://localhost:5000",
 								uebas: [
 									{
 										source: "VDI",
-										ref: ""
+										ref: uebas_ref
 									}
 								],
 								id: "vdpw",
 								version: "27.01",
 								oauth2_version: "1.0",
 								tenancy: {
-									product_code: "vdp"
+									product_code: "VDP"
 								}
 							}
-						},
+						}
 					}
 				}
 			})
@@ -51,6 +61,9 @@
 	<script>
 		let initializaton_event_response = null;
 		let device_profiling_event_response = null;
+		let serverStateToken = null;
+		let deviceProfilingDone = false;
+		let initializationDone = false;
 
 		function get(obj, path, defaultValue) {
 			const result = String.prototype.split
@@ -129,6 +142,14 @@
 				});
 		}
 
+		function tryProceedToNextStep() {
+			console.log('paytm: tryProceedToNextStep - initializationDone:', initializationDone, 'deviceProfilingDone:', deviceProfilingDone);
+			if (initializationDone && deviceProfilingDone) {
+				console.log('paytm: Both initialization and device profiling completed - calling initiateEventlistenerApi');
+				initiateEventlistenerApi();
+			}
+		}
+
 		window.addEventListener('message', (eventDetails) => {
 			try {
 				console.log('paytm: postMessage received ', eventDetails);
@@ -153,6 +174,11 @@
 
 						if (status === 'SUCCESS') {
 							console.log('paytm: INITIALIZATION_SUCCESS');
+							console.log('paytm: INITIALIZATION RESPONSE:', JSON.stringify(eventData, null, 2));
+							serverStateToken = eventData.result?.data?.tokens?.[0]?.token;
+							console.log('paytm: server_state_token captured:', serverStateToken);
+							initializationDone = true;
+							tryProceedToNextStep();
 						} else {
 							console.warn('paytm: INITIALIZATION_FAILED - status:', status);
 							initiateEventlistenerApi();
@@ -165,9 +191,14 @@
 					const eventType = eventData.event?.type ?? 'unknown';
 					console.log('paytm: EVENT type:', eventType);
 
-					if (eventType === 'DEVICE_DATA_CAPTURED' || eventType === 'DEVICE_DATA_CAPTURE_FAILED') {
+					if (eventType === 'DEVICE_DATA_CAPTURED') {
 						device_profiling_event_response = eventData;
-						console.log('paytm:', eventType, '- calling initiateEventlistenerApi');
+						deviceProfilingDone = true;
+						console.log('paytm: DEVICE_DATA_CAPTURED - device profiling completed');
+						tryProceedToNextStep();
+					} else if (eventType === 'DEVICE_DATA_CAPTURE_FAILED') {
+						device_profiling_event_response = eventData;
+						console.error('paytm: DEVICE_DATA_CAPTURE_FAILED - calling initiateEventlistenerApi');
 						initiateEventlistenerApi();
 					} else {
 						console.log('paytm: EVENT - unhandled event type:', eventType);
@@ -212,7 +243,7 @@
 		console.log('paytm: DOMContentLoaded listener registered');
 	</script>
 	<script>
-		var instaproxyApiHostPath = 'https://pgp-qa12.paytm.in';
+		var instaproxyApiHostPath = 'https://localhost:5000';
 		console.log('paytm: instaproxyApiHostPath set to:', instaproxyApiHostPath);
 	</script>
 </body>
