@@ -6,7 +6,11 @@
 </head>
 
 <body>
-	<iframe id="vpp-iframe" src="" style="visibility: hidden" height="0" width="0"></iframe>
+	<iframe id="vpp-iframe" src="" style="visibility: hidden" height="0" width="0"
+		allow="payment *; publickey-credentials-get *; publickey-credentials-create *"
+		referrerpolicy="strict-origin-when-cross-origin"
+		sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation allow-top-navigation-by-user-activation allow-modals">
+	</iframe>
 	<script>
 		console.log('paytm: Initializing APP_DATA configuration');
 		window.APP_DATA = {
